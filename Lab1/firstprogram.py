@@ -13,16 +13,31 @@
 from datetime import date
 
 today = date.today()
-print("I wrote my first python script:", today)
+print("Today is :", today)
+
+ReadMe = open("ReadMe.txt", "r") 
+# Open the file ReadMe.txt for reading
+ReadMeContents = ReadMe.read() 
+# Assign the contents of the file to the variable ReadMeContents
+print (ReadMeContents) 
+#Print the contents of the file now stored in variable ReadMeContents
+ReadMe.close() 
+# Close the file handle
+
+UserInput = input("Continue y or n: ")
+# Debug statement print("You entered: " + UserInput)
 
 # Using module OS to get a directory listing
 # I used listdir as opposed to walk because walk required a path but listdir lists the contents of the current directoy
-import os
-CurrentDirListing = os.listdir()
-print("Printing the results of os.listdir command")
-print(CurrentDirListing)
+if UserInput == "y": 
+	import os
+	CurrentDirListing = os.listdir()
+	print("Printing the results of os.listdir command")
+	print(CurrentDirListing)
 
-import subprocess
-print("Executing subprocess command run with parameters ls -alrt")
-commandreturncode = subprocess.run(['ls', '-alrt'])
-print('returncode:', commandreturncode.returncode)
+	import subprocess
+	print("Executing subprocess command run with parameters ls -alrt")
+	commandreturncode = subprocess.run(['ls', '-alrt'])
+	print('returncode:', commandreturncode.returncode)
+else:
+	print("You chose not to execute the commands")
