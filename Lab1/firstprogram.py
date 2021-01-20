@@ -2,13 +2,13 @@
 # It imports the date module
 # Then it create a variable 'today' and assigns todays date to it
 # It then prints out a statement including todays date
-# Then it uses the module subprocess to execute the command 'ls -alrt' 
-# It assigns the returncode from executing the subprocess function run to completed
-# It then prints the return code
+# It then opens the ReadMe file and prints the contents to screen
+# The ReadMe file explains what commands will run next - either listdir or ls -alrt, one uses os, one uses subprocees run
+# The user is asked if they want to proceed
+# If the user answers y or Y the code executes otherwise the program ends
 # I am using W3schools to learn python syntax. I learned about the subprocess module from pymotw.com
 # I tested this program by typing python3 firstprogram.py on my command line
 # I am not sure yet how Anaconda is used with Python
-# I've realised now that obviously running a subprocess means I have assumed the OS will run an ls command
 
 from datetime import date
 
