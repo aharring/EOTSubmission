@@ -29,7 +29,7 @@ UserInput = input("Continue y or n: ")
 
 # Using module OS to get a directory listing
 # I used listdir as opposed to walk because walk required a path but listdir lists the contents of the current directoy
-if UserInput == "y": 
+if UserInput.upper() == "Y": 
 	import os
 	CurrentDirListing = os.listdir()
 	print("Printing the results of os.listdir command")
