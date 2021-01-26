@@ -1,0 +1,12 @@
+# Practice plotting a graph
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt('TestData.txt')
+for column in data.T:
+  print (column)
+  plt.plot(data[:,0], column)
+
+plt.show()
+exit()
