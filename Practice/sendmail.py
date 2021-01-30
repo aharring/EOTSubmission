@@ -3,6 +3,8 @@
 # The command to start it is python -m smtpd -c DebuggingServer -n localhost:1025
 # I was going to check to see if it was running and if not start it but this was distracting from main goal of sending a gmail so I have parked 
 # that idea for now & just started the process in the background on a terminal
+# So for this program to run you will need to have executed the command -m smtpd -c DebuggingServer -n localhost:1025 on your terminal first
+# My primary reference was realpython.com
 
 #import subprocess
 #subprocess.Popen(['python', '-m', 'smtpd', '-c', 'DebuggingServer', '-n', 'localhost:1025' ])
