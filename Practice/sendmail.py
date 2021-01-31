@@ -1,4 +1,4 @@
-# First, becuase I do not want to record password info or set up a dummy gmail
+# First, because I do not want to record password info or set up a dummy gmail
 # I'm going to start a SMTP debug on localhost to run with python
 # The command to start it is python -m smtpd -c DebuggingServer -n localhost:1025
 # I was going to check to see if it was running and if not start it but this was distracting from main goal of sending a gmail so I have parked 

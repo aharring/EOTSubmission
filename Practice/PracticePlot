@@ -1,4 +1,5 @@
 # Practice plotting a graph
+# Based on the numpy module which I saw on w3schools
 
 import numpy as np
 import matplotlib.pyplot as plt
