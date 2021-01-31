@@ -1,5 +1,5 @@
 # This program is based on Week 2 Labs  for programming for CyberSecurity, FirstPrograms.pdf 
-# The labs were set by lecturer Adrew Beatty, GMIT
+# The labs were set by lecturer Andrew Beatty, GMIT
 # This program satisfies steps 12 & 13 of FirstPrograms.pdf
 #
 # 12. Create a new file called hello2.py that reads in a person’s name and prints out
