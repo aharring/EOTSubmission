@@ -1,7 +1,9 @@
 # Given an array of songs, of size n, 
 # print you are playing the requested songnumber then place 
 # it at the end of the queue and print the new queue
-#
+# 
+# Question taken from https://www.careercup.com/question?id=6221267277971456 
+# Intended as practice for Google tech questions
 
 songqueue = ['A','B','C','D','E','F'] # Our pretend playlist
 numsongs = len(songqueue) # The length of our playlist
