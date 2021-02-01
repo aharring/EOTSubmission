@@ -1,28 +1,21 @@
-# The code example below creates a secure connection with Gmail’s SMTP server, 
-# using the SMTP_SSL() of smtplib to initiate a TLS-encrypted connection. 
-# The default context of ssl validates the host name and its certificates then  optimizes the security of the connection.
-# One this is done a simple text email is sent
-# Important OAuth2 was enabled to improve security. Instructions found here https://developers.google.com/gmail/api/quickstart/python
+# The code example below prompts for the email senders email address & password as well as the recipients email address
+# This just avoids any information being kept in this program
 
+import smtplib
 
-import smtplib, ssl
+sender_email = input("Please enter Sender's  email: " )
+password = input("Type Sender's email password and press enter: ")
 
-sender_email = "devprogtechtest@gmail.com"
-receiver_email = "adele.harrington@gmail.com"
+receiver_email = input ("Please enter recipent's email address: ")
+
+# For now the message is hardcoded
+
 message = """\
-Subject: Test Email from Python 
+Subject: Hi there
 
-This message is sent from sendmailSMTP_SSL.py."""
+This message is sent from Python."""
 
-port = 465  # For SSL
-
-password = input("Type your password and press enter: ")
-print(password)
-
-# Create a secure SSL context
-context = ssl.create_default_context()
-
-with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-    server.login("devprogtechtest@gmail.com", password)
+server = smtplib.SMTP_SSL('smtp.gmail.com',465)
+server.login(sender_email,password)
 
 server.sendmail(sender_email, receiver_email, message)

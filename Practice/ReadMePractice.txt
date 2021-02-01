@@ -22,9 +22,14 @@
 #	I referenced an article on RealPython for details of how to start in debug mode
 #
 # sendmailSMTP_SSL.py WORKINPROGRESS - 
-#	I set up the dummy email but thought rather than going with reduced security I would attempt to set the account with added OAuth based on Goggle 
-#	guides but even though everything seemed to install ok when I execute he program it fails and google tells me an account that is not trusted
-#	tried to send an email - so some more reading required here.
+#	I set up the dummy email but thought rather than going with reduced security 
+#	would attempt to set the account with added OAuth based on Google -
+#	guides but even though everything seemed to install ok when I execute the program 
+#	it fails and google tells me an account that is not trusted. Turns out if you enable Oauth then as a developer you have to
+#	go through a verification process - which is not a simple click and you're done thing
+#	Ok - removed the context statement & the ssl import - I think they may have been python2, lowered the security level for my
+#	test account and it worked. Changed the program to prompt for both sender & 
+#	recipients addresses as well as pw to avoid storing any info at all
 #
 # MaxNum.py This is working - but not if there are negative numbers in the array so needs fine tuning but was fun to write
 #	The idea is that given an array of ints you are allowed use any combo of +-* to generate the largest possible number
