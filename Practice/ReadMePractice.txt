@@ -37,3 +37,5 @@
 #	because in their example they gave of an input of [1,3,4,5] and said the highest number was 72 which I initially programmed for but - then I saw
 #	you could get 80 - so I had another look at the logic and now I'm happier with it - just need to think a wee bit about handling negatives
 #	
+# CCArraySum.py
+# 	Given an int array for element i create a new array with element i value plus the next i entries
