@@ -1,0 +1,51 @@
+Week 06 Topic Files
+Quiz
+
+Q1.a. Look at the program below, assuming that the file test-a.txt does not exist.
+      What will happen when the program runs?
+
+with open("test-a.txt") as f:
+ data = f.read()
+ print (data)
+
+A. The file does not exist so the program should error with a file not found message
+
+Q1.b. Look at the program below, Assuming the file test-b.txt does not exist, what
+will be outputted to the console when this program is run?
+
+with open("test-b.txt", "w") as f:
+ data = f.write("test b\n") # returns the number of
+chars written
+ print (data)
+with open("test-b.txt", "w") as f2: # open file again
+ data = f2.write("another line\n")
+ print (data)
+
+A. The first statement prints the number of chars that were outputted to the file (7). I think based on Andrew's lecture the answer might be 8 in windows
+The second print statement prints out the number of chars for the data written the second time the file
+was opened. On my system that's 13 but on a windows system I think it might print 14
+
+Q1.c. What will the contents of the file test-b.txt be when this program is run?
+
+A. Both opens are done with a 'w' which means the first line will be overwritten when the second write is done
+so you will see one line with 'another line' on it.
+If you wanted to see both lines you would open the file with an 'a' instead of a 'w'
+
+Q1.d. Look at the modified program below, what will the contents of the file be
+after this program is run.
+
+# The with statement will automatically close the file
+# when it is finished with it
+with open("test-d.txt", "w") as f:
+ data = f.write("test d\n") # returns the number of
+chars written
+ print (data)
+with open("test-d.txt", "a") as f2: # open file again
+ data = f2.write("another line\n")
+ print (data)
+
+A. The file will contain two lines as follows
+test d
+another line
+
+The file was opened the second time with an append format as opposed to an overwrite format
