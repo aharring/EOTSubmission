@@ -10,4 +10,15 @@ Many of the programs are based on questions posed on the online website CareerCu
 There is a readme.txt file in the Practice directory which lists each program by name and summarises what it is trying to do. If the program is a work in progress,
 then this is stated.
 
+Week01
+Week02
+Week03
+Week04
+Week05
+Week06
+Week07 Working with regular expresions.
+Week08 Working with numpy & matplotlib
+
+
+
 

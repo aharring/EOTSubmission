@@ -1,0 +1,51 @@
+
+Regular Expression :hello Matching Line :hello
+ First Match h
+Regular Expression :Hello Matching Line :Hello
+ First Match H
+Regular Expression :Hello Matching Line :Hello World
+ First Match H
+Regular Expression :Hello Matching Line :      Hello Mary
+ First Match H
+Regular Expression :^Hello Matching Line :Hello
+ First Match H
+Regular Expression :^Hello Matching Line :Hello World
+ First Match H
+Regular Expression :^Hell*o Matching Line :Hello
+ First Match H
+Regular Expression :^Hell*o Matching Line :Hello World
+ First Match H
+Regular Expression :^Hell*o Matching Line :Helo John
+ First Match H
+Regular Expression :^Hell*o Matching Line :Hellllllllllllllllllo Anamaniacs
+ First Match H
+Regular Expression :^Hell+o Matching Line :Hello
+ First Match H
+Regular Expression :^Hell+o Matching Line :Hello World
+ First Match H
+Regular Expression :^Hell+o Matching Line :Hellllllllllllllllllo Anamaniacs
+ First Match H
+Regular Expression :^Hell Matching Line :Hello
+ First Match H
+Regular Expression :^Hell Matching Line :Hello World
+ First Match H
+Regular Expression :^Hell Matching Line :Hellllllllllllllllllo Anamaniacs
+ First Match H
+Regular Expression :^Hello [A-Z] Matching Line :Hello World
+ First Match H
+Regular Expression :[^He]llo [A-Z] Matching Line :Hellllllllllllllllllo Anamaniacs
+ First Match l
+Regular Expression :[^Hel] [A-Z] Matching Line :Hello World
+ First Match o
+Regular Expression :[^Hel] [A-Z] Matching Line :Helo John
+ First Match o
+Regular Expression :[^Hel] [A-Z] Matching Line :      Hello Mary
+ First Match  
+Regular Expression :[^Hel] [A-Z] Matching Line :Hellllllllllllllllllo Anamaniacs
+ First Match o
+Regular Expression :[^Hel] [A-Z] Matching Line :change this # This will change
+ First Match #
+Regular Expression := Matching Line :var = 123
+ First Match =
+Regular Expression :# Matching Line :change this # This will change
+ First Match #

@@ -1,0 +1,14 @@
+hello
+Hello
+^Hello
+^Hell*o
+^Hell+o
+^Hell
+^hello [A-Z]
+^Hello [A-Z]
+[^H]ello [A-Z]
+[^He]llo [A-Z]
+[^Hel] [A-Z]
+=
+#
+^$
