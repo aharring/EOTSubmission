@@ -11,13 +11,13 @@ There is a readme.txt file in the Practice directory which lists each program by
 then this is stated.
 
 Week01
-Week02
-Week03
-Week04
-Week05
-Week06
-Week07 Working with regular expresions.
-Week08 Working with numpy & matplotlib
+Week02 Statements 
+Week03 Variables
+Week04 Flow Control - if, while & for
+Week05 Functions
+Week06 Files
+Week07 Working with regular expresions. In addition to the lab I attempted a solution for the 'sentence in the middle of 3' question.
+Week08 Working with numpy & matplotlib. Struggling with creating seaborn normal distribution. 
 
 
 
