@@ -9,6 +9,7 @@ This repository also contains a directory called Practice. This directory contai
 Many of the programs are based on questions posed on the online website CareerCup, tag - Google.
 There is a readme.txt file in the Practice directory which lists each program by name and summarises what it is trying to do. If the program is a work in progress,
 then this is stated.
+New directory 'Team' added to allow me to run another student's code to see where they are encountering the problem.  
 
 Week01
 Week02 Statements 

@@ -39,3 +39,5 @@
 #	
 # CCArraySum.py
 # 	Given an int array for element i create a new array with element i value plus the next i entries
+# Iris4.py etcy 
+#       Using Iris data file to practice lists/dicts, functions etc.
