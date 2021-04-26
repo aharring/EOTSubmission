@@ -41,3 +41,8 @@
 # 	Given an int array for element i create a new array with element i value plus the next i entries
 # Iris4.py etcy 
 #       Using Iris data file to practice lists/dicts, functions etc.
+# EOD.py
+#       So my 9 year old has expressed an interest in stocks - stocks if you don't mind! Anyway, I thought I'd use his interest in pennystocks
+#       to my advantage and see if I could do a daily API call to get info for certain symbols - the free account only allows 1000 calls a month
+#       and my guess is each symbol equates to one call - though I could be wrong. In any case I thought this might be a good learning experience for the whole
+#       key and api thing
