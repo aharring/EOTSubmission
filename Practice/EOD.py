@@ -8,23 +8,38 @@
 #                    This is my placeholder note to myself to remind me what I planned o doing in programming to keep myself entertained
 #
 # Source API : https://marketstack.com
+# Sigh, that was short lived .. I can't get the data over HTTPS without paying a fee
 #
+# New Source : RapidAPI. 
+#              Yay! The call for Tesla data worked. Since I'm only allowed 500 free calls a month I've recorded the output data in a txt file and I'll use that to play around
+#              and develop my wee program.
+#              The plan :
+#                  We're interested in a finite set of symbols since we are dealing with two restrictions - my son's attention span and the upper limit of 500 calls a month
+#                  So I'm thinking .. I'll ultimately store the data in a database with one table summarising the symbols being imported and a table for each symbol storing the 
+#                  historical data - the idea finally being we can show plots for given timeframes for given symbols - but obviously that is not happening today!
 
 import requests
 
-params = {
-  'access_key': 'GOTTA_GET_AN_ACCESS_KEY'
-}
+# Probably going to need these further down the line 
+import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime
+from matplotlib import rcParams
 
-api_result = requests.get('https://api.marketstack.com/v1/tickers/aapl/eod', params)
+url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/auto-complete"
 
-api_response = api_result.json()
+querystring = {"q":"tesla","region":"US"}
 
-for stock_data in api_response['data']:
-    print(u'Ticker %s has a day high of  %s on %s' % (
-      stock_data['symbol']
-      stock_data['high']
-      stock_data['date']
-    ))ate']
-))
+headers = {
+    'x-rapidapi-key': "Register",
+    'x-rapidapi-host': "Register"
+    }
+
+response = requests.request("GET", url, headers=headers, params=querystring)
+
+print(response.text)
+
+
+
 
