@@ -45,4 +45,7 @@
 #       So my 9 year old has expressed an interest in stocks - stocks if you don't mind! Anyway, I thought I'd use his interest in pennystocks
 #       to my advantage and see if I could do a daily API call to get info for certain symbols - the free account only allows 1000 calls a month
 #       and my guess is each symbol equates to one call - though I could be wrong. In any case I thought this might be a good learning experience for the whole
-#       key and api thing
+#       key and api thing .. Going to step through data analytics course a bit first
+# FAB.py
+#      Concept only at the mo - brother is doing DA course and has no coding buddy - well no one who will #      do any work so we're going to look at JCDecaux data and see what we can do with it - that's the brief     No code yet bc really need to look at the data
+
