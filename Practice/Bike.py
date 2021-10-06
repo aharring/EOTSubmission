@@ -11,6 +11,7 @@ import pandas as pd
 import re               # RegEx used to extract Lat & Long
 import mpu		# Used to calculate distance between two points
 import numpy as np
+import matplotlib.pyplot as plt
 
 def displayMenu():
     print("\nWelcome - What would you like to do?\n")
@@ -25,13 +26,19 @@ def displayMenu():
 #bikeData = pd.read_csv("BDD.csv") 	# Read in the Bike Data. Assumption currently is the file exists & is in the same dir.
 bikeData = pd.read_csv("BikeApiCombined.csv")
 bikeData.drop_duplicates(subset="name", keep = 'first', inplace = True) # Dropping duplicates here - may need a copy of DF for other calculations
-print(bikeData)
 
 bikeData['lat'] = bikeData.position.str.extract(r':(.*?),', expand=True)           # Split out lattitude. Append it to dataframe
 bikeData['lng'] = bikeData.position.str.extract(r'lng\':(.*?)}', expand=True)      # Split out longitude. Append it to dataframe
 bikeData['distance'] = 0.0                                                         # Add the distance column to the DF & initialise to float
 bikeData.sort_values(by=['status','name'], inplace = True, ascending = [False, True]) # Sort the data alphabetically within Open, Closed
 bikeData.reset_index(drop=True, inplace = True)                                    # Reorder the index
+
+bikeData['less 10 percent'] = np.where(bikeData.available_bikes/bikeData.bike_stands <= 0.1, True, False)
+print(bikeData)
+
+bikeData.groupby(['less 10 percent','name'])['less 10 percent'].count()
+fig, ax = plt.subplots(figsize=(15,7))
+bikeData.groupby(['less 10 percent','name'])['less 10 percent'].count().plot(ax=ax)
 
 # Add processing for the time maniuplation
 
@@ -69,12 +76,12 @@ def doDisplayMap():
     print("In doDisplayMap")
 
 # Simple menu to demonstrate user input & processing
-choice = displayMenu()
-while(choice != 'q'):
-    if choice == 'f':
-       doFindNearestBike(bikeData) 
-    elif choice == 'v':
-       doDisplayMap()
-    elif choice !='q':
-       print("\n\nplease select either f,v or q")
-    choice=displayMenu() 
+#choice = displayMenu()
+#while(choice != 'q'):
+#    if choice == 'f':
+#       doFindNearestBike(bikeData) 
+#    elif choice == 'v':
+#       doDisplayMap()
+#    elif choice !='q':
+#       print("\n\nplease select either f,v or q")
+#    choice=displayMenu() 
