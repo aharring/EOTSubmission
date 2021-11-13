@@ -5,11 +5,11 @@
 # Program Name : idpghvul.py (Identify potential git hub vulnerabilities)
 #
 # Program Function : 
-#	Initially this program will 
-#       1. download my respository to a temp directory 
-#       2. check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
-#       3. record vulnerabilties
-#       4. remove tmp downloaded dir in preparation for next iteration
+#	This program will 
+#       . download my respository to a temp directory 
+#       . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
+#       . record vulnerabilties
+#       . remove tmp downloaded dir in preparation for next iteration
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html
@@ -18,9 +18,11 @@
 #       4. https://www.programiz.com/python-programming/regex 
 #       5. https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit
 #       6. https://docs.python.org/3/library/logging.html
+#       7. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
 #
 
 import re       
+import sys
 import json
 import requests
 import tempfile
@@ -38,19 +40,15 @@ debugLogFile = "idpghvul.log" # Just a straightforward log file, no timestamp, o
 infoLogFile = "idpghvul.info" # This file will contain details of all repositories/files listed in commits as changed, as well as verification of keywords scanned
 pVulLogFile = "idpghvul.pvul"
 
-# Old logging method - leaving it here until I'm happy with new method
-#fileHandler = logging.FileHandler("{0}".format(DEBUG_LOG_FILE))
-#rootLogger = logging.getLogger()
-#rootLogger.addHandler(fileHandler)
-#rootLogger.setLevel(logging.DEBUG)             # Debug Level
-
 def configLogFile(name, log_file, level):
 
     handler = logging.FileHandler(log_file)        
+    stdout_handler = logging.StreamHandler(sys.stdout) # In addition to printing to the appropriate log file, output to the console
 
     logger = logging.getLogger(name)
     logger.setLevel(level)
-    logger.addHandler(handler)
+    logger.addHandler(handler)                         # File handler
+    logger.addHandler(stdout_handler)                  # Output to stdout simultaneously - means I do no need a print in addition to logger command
 
     return logger
 
@@ -61,7 +59,6 @@ infoLog.info('This file contains complete execution output')
 # Set up the log file that contains details of suspicious keywords files found
 pVulLog = configLogFile('Potential Vulnerabilities', pVulLogFile, "WARNING")
 pVulLog.warning('This file contains suspect findings \n')
-
 
 # Hardcoded for now.
 users = ["andrewbeattycourseware"] # Just me for now
@@ -111,20 +108,17 @@ def retrieveRepos ():
 # Retrieving repos based on username. Not concerned about orgs or contributors yet 
     for user in users:
         repoPath = "{}/users/{}/repos".format(ghUrl, user)
-        #logging.debug("Repo Path\n%s", repoPath)                  # Logging repo path being reviewed
         listRepos = requestRP(repoPath)
     for repo in listRepos:
         if repo["fork"] == False :                                # If the repository is not a fork
             infoLog.info("Repo details\n%s", repo["git_url"])
-           #logging.info("Repo details\n%s", repo["git_url"])     # Logging repo path being reviewed
-           #  print (repo)
+            ###print (repo["git_url"])
             healthCheck(repo["git_url"])
 
 def findPossibleProblems (commitDiff):
 
-    #logging.info("Checking {}{}{}\n".format(colors.FILENAME, commitDiff.b_path, colors.NORMAL)) # Old logging, will remove once all working ok
     infoLog.info("{}Checking {}{}{}" .format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL))                    # Haven't quite figured out coloring text yet
-    print("{}Checking {}{}{}".format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL)) # Std Out - but ideally I don't want to have to write a separate line here
+    ######print("{}Checking {}{}{}".format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL)) # Std Out - but ideally I don't want to have to write a separate line here
 
     blob_text = commitDiff.diff.decode("utf-8", errors="replace")
     for suspectPhrase in likelyCandidates:
@@ -140,24 +134,22 @@ def findPossibleProblems (commitDiff):
                     colors.NORMAL
                 )
             )
-            print(
-                "{}Suspect phrase {} {} {} found in {} {} {}".format(
-                    colors.NORMAL,
-                    colors.WARNING,
-                    suspectPhrase,
-                    colors.NORMAL,
-                    colors.COMMIT,
-                    commitDiff.b_path,
-                    colors.NORMAL
-                )
-            )
+            ######print(
+                ##"{}Suspect phrase {} {} {} found in {} {} {}".format(
+                 ##   colors.NORMAL,
+                  ##  colors.WARNING,
+                   ## suspectPhrase,
+                    ##colors.NORMAL,
+                    ##colors.COMMIT,
+                    ##commitDiff.b_path,
+                    ##colors.NORMAL
+                ##)
+            ##)
         else :
             infoLog.info("Suspect Phrase {} not found" .format(suspectPhrase))
-            #logging.info("Suspect Phrase {} not found" .format(suspectPhrase)) 
+            ##print("Suspect Phrase {} not found" .format(suspectPhrase))
 
 def healthCheck(repoUrl):
-
-    #logging.debug("In healthCheck : Param Repo Url = %s", repoUrl) 
 
     tmpDir = cloneRepo(repoUrl)
     repo = Repo(tmpDir)
@@ -167,23 +159,20 @@ def healthCheck(repoUrl):
     for branch in branches:
         branchName = branch.name
         infoLog.info(branchName)
-        #logging.info(branchName)
-        print(branchName)
+    #    print("Branch name : {}" .format(branchName))
         for commit in repo.iter_commits(branchName, max_count=100):
             print("=" * 25)
-
-            #logging.info(
             infoLog.info(
                 "\n{}Searching commit {}{}{}".format(
                     colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
                 )
             )
 
-            print(
-                "\n{}Searching commit {}{}{}".format(
-                    colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
-                )
-            )
+    #        print(
+    #            "\n{}Searching commit {}{}{}".format(
+    #                colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
+    #            )
+    #        )
 
             if prevCommit == NULL_TREE :
                 prevCommit = commit
