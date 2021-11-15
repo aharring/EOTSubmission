@@ -9,12 +9,24 @@
 #
 # Current Status : Work in progress
 #
-# Program Function : 
-#       Initially this program will 
-#       1. download my respository to a temp directory 
-#       2. check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
-#       3. record vulnerabilties
-#       4. remove tmp downloaded dir in preparation for next iteration
+# Program Function :
+#       This program will
+#       . display a menu with the following options
+#           . Enter one or more org names
+#               if no org is supplied use default & proceed
+#                   Not Written Yet
+#           . Enter one or more users
+#               if no user is supplied use default
+#               . For each listed user
+#                   . download user respository to a temp directory
+#                   . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
+#                   . record vulnerabilties
+#                   . remove tmp downloaded dir in preparation for next iteration
+#           . Enter an id range to be scanned
+#               if no id range is supplied use default & proceed
+#               For range option do simple checks such as min < max, min & max are both positive .. Not done yet
+#                   Not Written Yet
+#           . For the information supplied, whether org, user, id range - get the associated repos, check the commits for vulerabilities (WIP)
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html

@@ -6,10 +6,21 @@
 #
 # Program Function : 
 #	This program will 
-#       . download my respository to a temp directory 
-#       . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
-#       . record vulnerabilties
-#       . remove tmp downloaded dir in preparation for next iteration
+#       . display a menu with the following options
+#           . Enter one or more org names
+#               if no org is supplied use default & proceed
+#                   Not Written Yet
+#           . Enter one or more users
+#               if no user is supplied use default 
+#               . For each listed user
+#                   . download user respository to a temp directory 
+#                   . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
+#                   . record vulnerabilties
+#                   . remove tmp downloaded dir in preparation for next iteration
+#           . Enter an id range to be scanned 
+#               if no id range is supplied use default & proceed
+#               For range option do simple checks such as min < max, min & max are both positive .. Not done yet
+#                   Not Written Yet
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html
@@ -22,42 +33,88 @@
 #
 
 import re       
-import sys
 import json
 import requests
 import tempfile
 import shutil
-import logging # Term #1, Lecture 3, week 9
+import logger   # Logging functionality separated out in to it's own module
+#import logging # Term #1, Lecture 3, week 9
 
 from git import Repo
 from git import NULL_TREE
+
+# Initial menu presented when program executes
+def displayMenu():
+
+    print("What would you like to do?")
+    print("\t(o) Scan github organisation for potential vulnerabilities")
+    print("\t(u) Scan github user account for potential vulnerabilities")
+    print("\t(i) Scan user accounts associated with a range of github ids for potential vulnerabilities")
+    print("\t(q) Quit")
+    selected = input("Type one letter (o/u/i/q):").strip()
+    return selected
+
+# displayMenu gives the option of entering org names for review.
+# This function reads in the org names & stores them for processing
+ 
+def readOrgNames():
+    orgs = []
+    org = input("\tEnter the Org name (blank to quit) :").strip()
+
+    while org != "":
+        orgs.append(org)
+        # now read the next org
+        org = input("\tEnter the Org name (blank to quit) :").strip()
+    return orgs 
+
+# displayMenu gives the option of entering user names for review.
+# This function reads in the user names & stores them for processing
+ 
+def readUserNames():
+    users = []
+    user = input("\tEnter the User name (blank to quit) :").strip()
+
+    while user != "":
+        users.append(user)
+        # now read the next org
+        user = input("\tEnter the User name (blank to quit) :").strip()
+    return users 
+
+# displayMenu gives the option of entering a range of ids associated with user accounts for review.
+# This function reads in the min/max for range and stores them for processing
+ 
+def readIDRange():
+    range = {} 
+    range["lower"]=int(input("\t\tEnter from id (int):"))
+    range["upper"]=int(input("\t\tEnter to id (int):"))
+    return range 
 
 # The output from this program is very long/verbose
 # The output will be split in to two files, one is purely informational & contains everything. The other contains details of suspicious entries only
 # Ideally the informational messages will be streamed to stdout as well so that it is possible to see progress
  
-debugLogFile = "idpghvul.log" # Just a straightforward log file, no timestamp, overwritten for each run
-infoLogFile = "idpghvul.info" # This file will contain details of all repositories/files listed in commits as changed, as well as verification of keywords scanned
-pVulLogFile = "idpghvul.pvul"
+#debugLogFile = "idpghvul.log" # Just a straightforward log file, no timestamp, overwritten for each run
+#infoLogFile = "idpghvul.info" # This file will contain details of all repositories/files listed in commits as changed, as well as verification of keywords scanned
+#pVulLogFile = "idpghvul.pvul"
 
-def configLogFile(name, log_file, level):
+#def configLogFile(name, log_file, level):
 
-    handler = logging.FileHandler(log_file)        
-    stdout_handler = logging.StreamHandler(sys.stdout) # In addition to printing to the appropriate log file, output to the console
-
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)                         # File handler
-    logger.addHandler(stdout_handler)                  # Output to stdout simultaneously - means I do no need a print in addition to logger command
-
-    return logger
+#    handler = logging.FileHandler(log_file)        
+#    stdout_handler = logging.StreamHandler(sys.stdout) # In addition to printing to the appropriate log file, output to the console
+#
+#    logger = logging.getLogger(name)
+#    logger.setLevel(level)
+#    logger.addHandler(handler)                         # File handler
+#    logger.addHandler(stdout_handler)                  # Output to stdout simultaneously - means I do no need a print in addition to logger command
+#
+#    return logger
 
 # Set up the log file that contains all execution output 
-infoLog = configLogFile('Execution Output', infoLogFile, "INFO")
+infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
 infoLog.info('This file contains complete execution output') 
 
 # Set up the log file that contains details of suspicious keywords files found
-pVulLog = configLogFile('Potential Vulnerabilities', pVulLogFile, "WARNING")
+pVulLog = logger.configLogFile('Potential Vulnerabilities', logger.pVulLogFile, "WARNING")
 pVulLog.warning('This file contains suspect findings \n')
 
 # Hardcoded for now.
@@ -104,8 +161,26 @@ def requestRP(repoPath):
         pass
     return repoPaths.json()
 
+#
+# If an organisation is supplied instead or a user or id then we need to find all the users associated with the organisation
+#
+def idOrgUsers():
+
+    resp = []
+    for org in orgs:                                      # One or more orgs supplied by user input
+        try:
+            path = "{}/orgs/{}/members".format(ghUrl, org)
+            resp = requests_page(path)
+        except:
+            pass
+    for user in resp:
+        try:
+            users.append(user["login"])
+        except:
+            pass
+
 def retrieveRepos ():
-# Retrieving repos based on username. Not concerned about orgs or contributors yet 
+# Retrieving repos based on username. Not concerned about orgs or contributors yet .. but will be
     for user in users:
         repoPath = "{}/users/{}/repos".format(ghUrl, user)
         listRepos = requestRP(repoPath)
@@ -184,5 +259,31 @@ def healthCheck(repoUrl):
     # Remove tmpDir when done
     shutil.rmtree(tmpDir)
 
+#
+# A number of options available to user for searches
+#        A repo can be known by a users username or userid. Also, an organisation could have nuliple users associated with it
+#        Present a menu option
+#           1. Enter a github user name
+#                  If the user is a valid github user retrieve the repos, scan commits for words/phrases of interest
+#           2. Enter an organisation name
+#                  If the organisation is valid, retrieve all users for that organisation then for each user, scan commits for words/phrases of interest
+#           3. Every user has a numeric id associated with it. It's not necessary to know a users username
+#                  For a range of ids return tha associated usernames, then for each user, scan commits for words/phrases of interest 
+
 if __name__ == "__main__":
-    retrieveRepos()
+    selected = displayMenu()
+    while(selected != 'q'):
+        if selected == 'o':                 # 
+            orgs = readOrgNames()
+            print (orgs)
+        elif selected == 'u':
+            users = readUserNames()         # 
+            print(users)
+        elif selected == 'i':
+            range = readIDRange()           # Basic, not finished
+            print(range)
+        elif selected !='q':
+           print("\n\nplease select either o,u,i or q")
+        selected=displayMenu()
+
+        #retrieveRepos() Know this part works for users so just checking menu func
