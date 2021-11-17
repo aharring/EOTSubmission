@@ -4,23 +4,23 @@
 #
 # Program Name : idpghvul.py (Identify potential git hub vulnerabilities)
 #
-# Program Function : 
-#	This program will 
+# Program Function :
+#       This program will
 #       . display a menu with the following options
 #           . Enter one or more org names
-#               if no org is supplied use default & proceed
-#                   Not Written Yet
 #           . Enter one or more users
-#               if no user is supplied use default 
-#               . For each listed user
-#                   . download user respository to a temp directory 
-#                   . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
-#                   . record vulnerabilties
-#                   . remove tmp downloaded dir in preparation for next iteration
-#           . Enter an id range to be scanned 
+#           . Enter an id range to be scanned
 #               if no id range is supplied use default & proceed
 #               For range option do simple checks such as min < max, min & max are both positive .. Not done yet
 #                   Not Written Yet
+#           . Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
+#           . Get the associated repos, check the commits for vulerabilities (WIP)
+#             Note :  if no information is supplied use default
+#               . For each listed user
+#                   . download user respository to a temp directory
+#                   . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
+#                   . record vulnerabilties
+#                   . remove tmp downloaded dir in preparation for next iteration
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html
@@ -29,7 +29,9 @@
 #       4. https://www.programiz.com/python-programming/regex 
 #       5. https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit
 #       6. https://docs.python.org/3/library/logging.html
-#       7. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
+#       7. https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/about-organizations
+#       8. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
+#       9. https://www.w3schools.com/python/ref_func_set.asp
 #
 
 import re       
@@ -38,27 +40,35 @@ import requests
 import tempfile
 import shutil
 import logger   # Logging functionality separated out in to it's own module
-#import logging # Term #1, Lecture 3, week 9
 
 from git import Repo
 from git import NULL_TREE
 
+orgs = []
+users = []
+
 # Initial menu presented when program executes
+# You can build your scan list by entering org names and/or users and/or id ranges
+# The Scan is initiated once when the user enters s.
+# If no orgs/users/id ranges have been supplied then the default scan is for my account (aharring)
+
 def displayMenu():
 
     print("What would you like to do?")
-    print("\t(o) Scan github organisation for potential vulnerabilities")
-    print("\t(u) Scan github user account for potential vulnerabilities")
-    print("\t(i) Scan user accounts associated with a range of github ids for potential vulnerabilities")
-    print("\t(q) Quit")
-    selected = input("Type one letter (o/u/i/q):").strip()
+    print("\t(o) Enter github org name(s)")                               #
+    print("\t(u) Enter github user account(s)")
+    print("\t(i) Enter range of github ids")
+    print("\t(s) Initiate scan & Exit. Default scan is for github user aharring")
+    selected = input("Type one letter (o/u/i/s):").strip()
     return selected
 
 # displayMenu gives the option of entering org names for review.
 # This function reads in the org names & stores them for processing
  
 def readOrgNames():
-    orgs = []
+
+    # I am not resetting orgs to [] here. This means as you jump around the menu orgs is added to each time you choose it
+
     org = input("\tEnter the Org name (blank to quit) :").strip()
 
     while org != "":
@@ -71,7 +81,9 @@ def readOrgNames():
 # This function reads in the user names & stores them for processing
  
 def readUserNames():
-    users = []
+
+    # I am not resetting users to [] here. This means as you jump around the menu users is added to each time you choose it
+
     user = input("\tEnter the User name (blank to quit) :").strip()
 
     while user != "":
@@ -118,7 +130,7 @@ pVulLog = logger.configLogFile('Potential Vulnerabilities', logger.pVulLogFile, 
 pVulLog.warning('This file contains suspect findings \n')
 
 # Hardcoded for now.
-users = ["andrewbeattycourseware"] # Just me for now
+#users = ["andrewbeattycourseware"] # Just me for now
 ghUrl = "https://api.github.com"
 
 class colors:
@@ -127,22 +139,22 @@ class colors:
     NORMAL = "\033[0m"
     WARNING = "\033[1;31m"  # WARNING keyword - Bold Red
 
-# Keywords that might indicate vulnerabilities in a repository
+# Keywords that might indicate vulnerabilities in a repository - this may go in to a configuration file that's read in
 likelyCandidates = {
         "key",
-        "secret",
-        "password",
-        "encrypt",
         "API",
-        "random",
-        "hash",
+        "FTP",
         "MD5",
+        "hash",
         "SHA-1",
         "SHA-2",
-        "api_key",
-        "secret_key",
-        "FTP",
         "login",
+        "secret",
+        "random",
+        "encrypt",
+        "api_key",
+        "password",
+        "secret_key",
         "GitHub_token",
         "-----BEGIN PGP PRIVATE KEY BLOCK-----",
 }
@@ -164,7 +176,7 @@ def requestRP(repoPath):
 #
 # If an organisation is supplied instead or a user or id then we need to find all the users associated with the organisation
 #
-def idOrgUsers():
+def idOrgUsers(orgs):
 
     resp = []
     for org in orgs:                                      # One or more orgs supplied by user input
@@ -180,8 +192,14 @@ def idOrgUsers():
             pass
 
 def retrieveRepos ():
-# Retrieving repos based on username. Not concerned about orgs or contributors yet .. but will be
-    for user in users:
+# Retrieving repos based on username. 
+   
+    # We might have to retrieve a combination of users from individual users, orgs and those supplied by range soooooo we need to make sure they are all included
+    allUsers = orgs + users                                       # Haven't written range code yet 
+    allUsers = set(allUsers)                                      # It seems possible to have duplicates so using python set should remove them
+    print("AllUsers{}".format(allUsers))
+    # return  Ugh I just want to check my ducks are all lined up
+    for user in allUsers:
         repoPath = "{}/users/{}/repos".format(ghUrl, user)
         listRepos = requestRP(repoPath)
     for repo in listRepos:
@@ -272,18 +290,17 @@ def healthCheck(repoUrl):
 
 if __name__ == "__main__":
     selected = displayMenu()
-    while(selected != 'q'):
-        if selected == 'o':                 # 
-            orgs = readOrgNames()
+    while(selected != 's'):
+        if selected == 'o':                  
+            orgs = readOrgNames()           # Read in then organisation names
             print (orgs)
+            idOrgUsers(orgs)                # For each org in orgs - identify the users
         elif selected == 'u':
-            users = readUserNames()         # 
-            print(users)
+            users = readUserNames()         # Read in users 
         elif selected == 'i':
             range = readIDRange()           # Basic, not finished
-            print(range)
-        elif selected !='q':
-           print("\n\nplease select either o,u,i or q")
+        elif selected !='s':
+           print("\n\nplease select either o,u,i or s")
         selected=displayMenu()
-
-        #retrieveRepos() Know this part works for users so just checking menu func
+        
+    retrieveRepos() # Know this part works for users so just checking menu func
