@@ -101,26 +101,6 @@ def readIDRange():
     range["upper"]=int(input("\t\tEnter to id (int):"))
     return range 
 
-# The output from this program is very long/verbose
-# The output will be split in to two files, one is purely informational & contains everything. The other contains details of suspicious entries only
-# Ideally the informational messages will be streamed to stdout as well so that it is possible to see progress
- 
-#debugLogFile = "idpghvul.log" # Just a straightforward log file, no timestamp, overwritten for each run
-#infoLogFile = "idpghvul.info" # This file will contain details of all repositories/files listed in commits as changed, as well as verification of keywords scanned
-#pVulLogFile = "idpghvul.pvul"
-
-#def configLogFile(name, log_file, level):
-
-#    handler = logging.FileHandler(log_file)        
-#    stdout_handler = logging.StreamHandler(sys.stdout) # In addition to printing to the appropriate log file, output to the console
-#
-#    logger = logging.getLogger(name)
-#    logger.setLevel(level)
-#    logger.addHandler(handler)                         # File handler
-#    logger.addHandler(stdout_handler)                  # Output to stdout simultaneously - means I do no need a print in addition to logger command
-#
-#    return logger
-
 # Set up the log file that contains all execution output 
 infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
 infoLog.info('This file contains complete execution output') 
@@ -129,8 +109,6 @@ infoLog.info('This file contains complete execution output')
 pVulLog = logger.configLogFile('Potential Vulnerabilities', logger.pVulLogFile, "WARNING")
 pVulLog.warning('This file contains suspect findings \n')
 
-# Hardcoded for now.
-#users = ["andrewbeattycourseware"] # Just me for now
 ghUrl = "https://api.github.com"
 
 class colors:
@@ -197,21 +175,21 @@ def retrieveRepos ():
     # We might have to retrieve a combination of users from individual users, orgs and those supplied by range soooooo we need to make sure they are all included
     allUsers = orgs + users                                       # Haven't written range code yet 
     allUsers = set(allUsers)                                      # It seems possible to have duplicates so using python set should remove them
-    print("AllUsers{}".format(allUsers))
-    # return  Ugh I just want to check my ducks are all lined up
+    print (allUsers)
     for user in allUsers:
         repoPath = "{}/users/{}/repos".format(ghUrl, user)
-        listRepos = requestRP(repoPath)
+        try:
+            listRepos = requestRP(repoPath)
+        except:
+            pass
     for repo in listRepos:
         if repo["fork"] == False :                                # If the repository is not a fork
             infoLog.info("Repo details\n%s", repo["git_url"])
-            ###print (repo["git_url"])
             healthCheck(repo["git_url"])
 
 def findPossibleProblems (commitDiff):
 
     infoLog.info("{}Checking {}{}{}" .format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL))                    # Haven't quite figured out coloring text yet
-    ######print("{}Checking {}{}{}".format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL)) # Std Out - but ideally I don't want to have to write a separate line here
 
     blob_text = commitDiff.diff.decode("utf-8", errors="replace")
     for suspectPhrase in likelyCandidates:
@@ -227,55 +205,40 @@ def findPossibleProblems (commitDiff):
                     colors.NORMAL
                 )
             )
-            ######print(
-                ##"{}Suspect phrase {} {} {} found in {} {} {}".format(
-                 ##   colors.NORMAL,
-                  ##  colors.WARNING,
-                   ## suspectPhrase,
-                    ##colors.NORMAL,
-                    ##colors.COMMIT,
-                    ##commitDiff.b_path,
-                    ##colors.NORMAL
-                ##)
-            ##)
         else :
             infoLog.info("Suspect Phrase {} not found" .format(suspectPhrase))
-            ##print("Suspect Phrase {} not found" .format(suspectPhrase))
 
 def healthCheck(repoUrl):
 
     tmpDir = cloneRepo(repoUrl)
     repo = Repo(tmpDir)
     branches = repo.remotes.origin.fetch()
+
     prevCommit = NULL_TREE
-    # print (branches)        Just actually checking I've got something
     for branch in branches:
-        branchName = branch.name
-        infoLog.info(branchName)
-    #    print("Branch name : {}" .format(branchName))
+        try:
+            branchName = branch.name                                
+        except:
+            pass
+        infoLog.info("BranchName : {}" .format(branchName))
         for commit in repo.iter_commits(branchName, max_count=100):
             print("=" * 25)
             infoLog.info(
                 "\n{}Searching commit {}{}{}".format(
                     colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
                 )
-            )
+             )
 
-    #        print(
-    #            "\n{}Searching commit {}{}{}".format(
-    #                colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
-    #            )
-    #        )
-
-            if prevCommit == NULL_TREE :
-                prevCommit = commit
-            commitDiffs = commit.diff(prevCommit, create_patch=True)
-            for commitDiff in commitDiffs:
-                findPossibleProblems(commitDiff)
+        if prevCommit == NULL_TREE :
+            prevCommit = commit
+        commitDiffs = commit.diff(prevCommit, create_patch=True)
+        for commitDiff in commitDiffs:
+            findPossibleProblems(commitDiff)
             prevCommit = commit
 
     # Remove tmpDir when done
     shutil.rmtree(tmpDir)
+    return
 
 #
 # A number of options available to user for searches
