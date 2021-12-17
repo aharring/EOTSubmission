@@ -1,19 +1,9 @@
 # GMIT CyberSecurity : Programming for CyberSecurity, Python
 # Lecturer : Andrew Beatty
 #
-#
 # Program Name : logger.py  
 #
-# Program Function :
-#       This program will configure logging to log to two separate log files & stdout
-#       It will be imported as a module by the main program idpghvul.py
-#       I'm separating out the logging code simply to make the main program more legible
-#
-# References :
-#       1. https://docs.python.org/3/library/logging.html
-#       2. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
-#       3. https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal
-#
+
 import sys
 import logging # Term #1, Lecture 3, week 9
 

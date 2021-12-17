@@ -1,9 +1,6 @@
 # GMIT CyberSecurity : Programming for CyberSecurity, Python
 # Lecturer : Andrew Beatty
 # 
-#
-# Program Name : idpghvul.py (Identify potential git hub vulnerabilities)
-#
 # Program Function :
 #       This program will
 #       . display a menu with the following options
@@ -11,16 +8,30 @@
 #           . Enter one or more users
 #           . Enter an id range to be scanned
 #               if no id range is supplied use default & proceed
-#               For range option do simple checks such as min < max, min & max are both positive .. Not done yet
-#                   Not Written Yet
+#               For range option do simple checks such as min < max, min & max are both positive. Review error checking* 
 #           . Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
 #           . Get the associated repos, check the commits for vulerabilities (WIP)
-#             Note :  if no information is supplied use default
+#             Note :  if no information is supplied use default !!! 
 #               . For each listed user
 #                   . download user respository to a temp directory
 #                   . check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
 #                   . record vulnerabilties
 #                   . remove tmp downloaded dir in preparation for next iteration
+#         Fun Add On :
+#             Every terminal run program needs an ascii text name that makes it look like an 80s arcade game title
+#
+# To Do :
+#       Error handling needs to be better
+#       Read about contributors. Now wondering if I have to include these
+#       Might make words being tested for a passable file on the command line - probaly there are way more words and things I can think of.
+#
+# Issues Encountered :
+#       This program has the potential to generate a lot of output so I really wanted something that would log informational messages versus actual potential problems
+#       separately. I opted to do two things
+#           1. Print the output in different colours
+#           2. Dual log - with everything going to the screen but potential problems being logged to one log file and purely informational stuff in a second file
+#           but .. I found that the method I used to change colours for the screen logging didn't translate in to the log file - if you vi the file it will contain the codes to 
+#           display the colours if the file is streamed to the terminal but the file itself will only be one colour. This was disappointing but I couldn't find a way around it.
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html
@@ -32,25 +43,28 @@
 #       7. https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/about-organizations
 #       8. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
 #       9. https://www.w3schools.com/python/ref_func_set.asp
+#      10. https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b 
 #
 
 import re       
 import json
-import requests
-import tempfile
 import shutil
 import logger   # Logging functionality separated out in to it's own module
+import requests
+import tempfile
+import pyfiglet # Ascii program banner
 
 from git import Repo
 from git import NULL_TREE
 
 orgs = []
 users = []
+defaultUser = ['andrewbeattycourseware'] # default user in the event a scan is initiated without supplying an org or user or id
 
 # Initial menu presented when program executes
 # You can build your scan list by entering org names and/or users and/or id ranges
 # The Scan is initiated once when the user enters s.
-# If no orgs/users/id ranges have been supplied then the default scan is for my account (aharring)
+# If no orgs/users/id ranges have been supplied then the default scan is for the lecturer, Andrew Beatty's, account
 
 def displayMenu():
 
@@ -58,8 +72,9 @@ def displayMenu():
     print("\t(o) Enter github org name(s)")                               #
     print("\t(u) Enter github user account(s)")
     print("\t(i) Enter range of github ids")
-    print("\t(s) Initiate scan & Exit. Default scan is for github user aharring")
-    selected = input("Type one letter (o/u/i/s):").strip()
+    print("\t(s) Initiate scan & Exit. Default scan is for github user andrewbeattycourseware")
+    print("\t(q) Do nothing. Exit.")
+    selected = input("Type one letter (o/u/i/s/q):").strip()
     return selected
 
 # displayMenu gives the option of entering org names for review.
@@ -96,10 +111,10 @@ def readUserNames():
 # This function reads in the min/max for range and stores them for processing
  
 def readIDRange():
-    range = {} 
-    range["lower"]=int(input("\t\tEnter from id (int):"))
-    range["upper"]=int(input("\t\tEnter to id (int):"))
-    return range 
+    rangeIDs = {} 
+    rangeIDs["lower"]=int(input("\t\tEnter from id (int):"))
+    rangeIDs["upper"]=int(input("\t\tEnter to id (int):"))
+    return rangeIDs 
 
 # Set up the log file that contains all execution output 
 infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
@@ -169,23 +184,43 @@ def idOrgUsers(orgs):
         except:
             pass
 
+#
+# If given a range of ids try to find the associated github user names
+# This function expects operates on the assumption the range is positive and min < max
+#
+def identifyUsersInRange (rangeIDs):
+
+    lowerRId = rangeIDs["lower"]
+    upperRId = rangeIDs["upper"]
+    ids = range(lowerRId, upperRId)
+    for id in ids:
+        try:
+            path = "{}/user/{}".format(ghUrl, id)
+            resp = requests_page(path)
+            users.append(resp["login"])
+        except:
+            pass
+    return users # Again, I haven't reset users so the users list should be a culmination of all users/users in range/orgusers from menu hopping
+
 def retrieveRepos ():
 # Retrieving repos based on username. 
    
     # We might have to retrieve a combination of users from individual users, orgs and those supplied by range soooooo we need to make sure they are all included
     allUsers = orgs + users                                       # Haven't written range code yet 
     allUsers = set(allUsers)                                      # It seems possible to have duplicates so using python set should remove them
-    print (allUsers)
-    for user in allUsers:
-        repoPath = "{}/users/{}/repos".format(ghUrl, user)
-        try:
-            listRepos = requestRP(repoPath)
-        except:
-            pass
-    for repo in listRepos:
-        if repo["fork"] == False :                                # If the repository is not a fork
-            infoLog.info("Repo details\n%s", repo["git_url"])
-            healthCheck(repo["git_url"])
+
+    if not allUsers :                                             # In the event no org/user/range was supplied
+        allUsers = defaultUser
+
+    for user in allUsers: 
+        repoPath = "{}/users/{}/repos".format(ghUrl, user) 
+        try: 
+            listRepos = requestRP(repoPath) 
+        except: 
+            pass 
+        for repo in listRepos: 
+            if repo["fork"] == False :                 # If the repository is not a fork infoLog.info("Repo details\n%s", repo["git_url"])
+                healthCheck(repo["git_url"]) 
 
 def findPossibleProblems (commitDiff):
 
@@ -215,6 +250,7 @@ def healthCheck(repoUrl):
     branches = repo.remotes.origin.fetch()
 
     prevCommit = NULL_TREE
+    infoLog.info("\nSearching Repo : {}" .format(repoUrl))
     for branch in branches:
         try:
             branchName = branch.name                                
@@ -229,12 +265,12 @@ def healthCheck(repoUrl):
                 )
              )
 
-        if prevCommit == NULL_TREE :
-            prevCommit = commit
-        commitDiffs = commit.diff(prevCommit, create_patch=True)
-        for commitDiff in commitDiffs:
-            findPossibleProblems(commitDiff)
-            prevCommit = commit
+            if prevCommit == NULL_TREE :
+                prevCommit = commit
+            commitDiffs = commit.diff(prevCommit, create_patch=True)
+            for commitDiff in commitDiffs:
+                findPossibleProblems(commitDiff)
+                prevCommit = commit
 
     # Remove tmpDir when done
     shutil.rmtree(tmpDir)
@@ -261,9 +297,16 @@ if __name__ == "__main__":
         elif selected == 'u':
             users = readUserNames()         # Read in users 
         elif selected == 'i':
-            range = readIDRange()           # Basic, not finished
+            rangeIDs = readIDRange()           # Just returns range
+            users = identifyUsersInRange(rangeIDs) # Get all user names in the range supplied 
+        elif selected == 'q':
+            exit()
         elif selected !='s':
-           print("\n\nplease select either o,u,i or s")
+           print("\n\nplease select either o,u,i,s or q")
         selected=displayMenu()
-        
-    retrieveRepos() # Know this part works for users so just checking menu func
+      
+# This code is only called once and it uses the built up list of users
+ 
+    banner = pyfiglet.figlet_format("GHUB SCANNER")
+    infoLog.info(banner)
+    retrieveRepos() 
