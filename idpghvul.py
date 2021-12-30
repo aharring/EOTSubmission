@@ -22,7 +22,6 @@
 #
 # To Do :
 #       Error handling needs to be better
-#       Read about contributors. Now wondering if I have to include these
 #       Might make words being tested for a passable file on the command line - probaly there are way more words and things I can think of.
 #
 # Issues Encountered :
@@ -32,6 +31,8 @@
 #           2. Dual log - with everything going to the screen but potential problems being logged to one log file and purely informational stuff in a second file
 #           but .. I found that the method I used to change colours for the screen logging didn't translate in to the log file - if you vi the file it will contain the codes to 
 #           display the colours if the file is streamed to the terminal but the file itself will only be one colour. This was disappointing but I couldn't find a way around it.
+#           3. The dual log isn't really giving me the functionality I wanted. I had been hoping to avoid the use of regex to extract out items of interest since the output 
+#              can be quite long but in hindsight a single logfile with options to run in stealth mode or verbose (default logging) is better
 #
 # References : 
 #       1. https://pygithub.readthedocs.io/en/latest/introduction.html
@@ -44,26 +45,65 @@
 #       8. https://www.kite.com/python/answers/how-to-print-logging-messages-to-both-stdout-and-to-a-file-in-python
 #       9. https://www.w3schools.com/python/ref_func_set.asp
 #      10. https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b 
+#      11. https://www.tutorialspoint.com/python/python_command_line_arguments.htm
+#      12. https://docs.python.org/3/howto/argparse.html#id1 .. more about command line arguments
+#      13. https://docs.python.org/3/library/re.html
+#      14. https://docs.python.org/3/library/tempfile.html
 #
 
-import re       
+import re       # Regular expression matching operations
 import json
-import shutil
+import shutil   # Allows directory operations such as rmdir
 import logger   # Logging functionality separated out in to it's own module
-import requests
-import tempfile
+import argparse # The program can be run in verbose mode with extensive logging or non verbose which doesn't log when it finds nothing
 import pyfiglet # Ascii program banner
+import requests # Http library 
+import tempfile # This module allwos the creation of temporary files & directories
 
 from git import Repo
 from git import NULL_TREE
+
+# Variable definitions & defaults
+
+ghUrl = "https://api.github.com"
 
 orgs = []
 users = []
 defaultUser = ['andrewbeattycourseware'] # default user in the event a scan is initiated without supplying an org or user or id
 
+class colors:
+    FILENAME = "\033[1;33m" # File name Bold Red
+    COMMIT = "\033[1;36m"   # Commit name Bold Light Blue
+    NORMAL = "\033[0m"
+    WARNING = "\033[1;31m"  # WARNING keyword - Bold Red
+
+# Keywords that might indicate vulnerabilities in a repository - this may go in to a configuration file that's read in
+likelyCandidates = {
+        "key",
+        "API",
+        "FTP",
+        "MD5",
+        "hash",
+        "SHA-1",
+        "SHA-2",
+        "login",
+        "secret",
+        "random",
+        "encrypt",
+        "api_key",
+        "password",
+        "secret_key",
+        "GitHub_token",
+        "-----BEGIN PGP PRIVATE KEY BLOCK-----",
+}
+
+# Set up the log file that contains all execution output 
+infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
+infoLog.info('{} file contains execution output' .format (logger.infoLogFile)) 
+
 # Initial menu presented when program executes
 # You can build your scan list by entering org names and/or users and/or id ranges
-# The Scan is initiated once when the user enters s.
+# The Scan is initiated only once when the user enters s.
 # If no orgs/users/id ranges have been supplied then the default scan is for the lecturer, Andrew Beatty's, account
 
 def displayMenu():
@@ -115,42 +155,6 @@ def readIDRange():
     rangeIDs["lower"]=int(input("\t\tEnter from id (int):"))
     rangeIDs["upper"]=int(input("\t\tEnter to id (int):"))
     return rangeIDs 
-
-# Set up the log file that contains all execution output 
-infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
-infoLog.info('This file contains complete execution output') 
-
-# Set up the log file that contains details of suspicious keywords files found
-pVulLog = logger.configLogFile('Potential Vulnerabilities', logger.pVulLogFile, "WARNING")
-pVulLog.warning('This file contains suspect findings \n')
-
-ghUrl = "https://api.github.com"
-
-class colors:
-    FILENAME = "\033[1;33m" # File name Bold Red
-    COMMIT = "\033[1;36m"   # Commit name Bold Light Blue
-    NORMAL = "\033[0m"
-    WARNING = "\033[1;31m"  # WARNING keyword - Bold Red
-
-# Keywords that might indicate vulnerabilities in a repository - this may go in to a configuration file that's read in
-likelyCandidates = {
-        "key",
-        "API",
-        "FTP",
-        "MD5",
-        "hash",
-        "SHA-1",
-        "SHA-2",
-        "login",
-        "secret",
-        "random",
-        "encrypt",
-        "api_key",
-        "password",
-        "secret_key",
-        "GitHub_token",
-        "-----BEGIN PGP PRIVATE KEY BLOCK-----",
-}
 
 def cloneRepo(repoUrl):
 # Make a tmp dir for repo getting health check
@@ -224,24 +228,27 @@ def retrieveRepos ():
 
 def findPossibleProblems (commitDiff):
 
-    infoLog.info("{}Checking {}{}{}" .format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL))                    # Haven't quite figured out coloring text yet
+    if commitDiff.b_path != 'None' :
+        if not args.stealth:
+            infoLog.info("{}Checking {}{}{}" .format(colors.NORMAL, colors.FILENAME, commitDiff.b_path, colors.NORMAL))    # Messages streamed to the terminal will be coloured 
 
-    blob_text = commitDiff.diff.decode("utf-8", errors="replace")
-    for suspectPhrase in likelyCandidates:
-        if re.search(suspectPhrase, blob_text, re.IGNORECASE):
-            pVulLog.warning (
-                "{}Suspect phrase {} {} {} found in {} {} {}".format(
-                    colors.NORMAL,
-                    colors.WARNING,
-                    suspectPhrase,
-                    colors.NORMAL,
-                    colors.COMMIT,
-                    commitDiff.b_path,
-                    colors.NORMAL
+        blob_text = commitDiff.diff.decode("utf-8", errors="replace")
+        for suspectPhrase in likelyCandidates:
+            if re.search(suspectPhrase, blob_text, re.IGNORECASE):
+                infoLog.info (
+                    "{}Suspect phrase {} {} {} found in {} {} {}".format(
+                        colors.NORMAL,
+                        colors.WARNING,
+                        suspectPhrase,
+                        colors.NORMAL,
+                        colors.COMMIT,
+                        commitDiff.b_path,
+                        colors.NORMAL
+                    )
                 )
-            )
-        else :
-            infoLog.info("Suspect Phrase {} not found" .format(suspectPhrase))
+            else :
+                if not args.stealth:
+                    infoLog.info("Suspect Phrase {} not found" .format(suspectPhrase))    # By default do extra logging because on first run it'll be helpful to know the program is running
 
 def healthCheck(repoUrl):
 
@@ -251,16 +258,17 @@ def healthCheck(repoUrl):
 
     prevCommit = NULL_TREE
     infoLog.info("\nSearching Repo : {}" .format(repoUrl))
+
     for branch in branches:
         try:
             branchName = branch.name                                
         except:
             pass
         infoLog.info("BranchName : {}" .format(branchName))
-        for commit in repo.iter_commits(branchName, max_count=100):
-            print("=" * 25)
+
+        for commit in repo.iter_commits(branchName, max_count=50):
             infoLog.info(
-                "\n{}Searching commit {}{}{}".format(
+                "\n==============================\n{}Searching commit {}{}{}".format(
                     colors.NORMAL, colors.COMMIT, commit.hexsha, colors.NORMAL
                 )
              )
@@ -281,13 +289,21 @@ def healthCheck(repoUrl):
 #        A repo can be known by a users username or userid. Also, an organisation could have nuliple users associated with it
 #        Present a menu option
 #           1. Enter a github user name
-#                  If the user is a valid github user retrieve the repos, scan commits for words/phrases of interest
+#                  If the user is a valid github user retrieve the repos
 #           2. Enter an organisation name
-#                  If the organisation is valid, retrieve all users for that organisation then for each user, scan commits for words/phrases of interest
+#                  If the organisation is valid, retrieve all users for that organisation
 #           3. Every user has a numeric id associated with it. It's not necessary to know a users username
-#                  For a range of ids return tha associated usernames, then for each user, scan commits for words/phrases of interest 
+#                  For a range of ids return tha associated usernames  
+#           4. it is possible to continue to add to the user list to be scanned by continuing to choose different menu options but
+#                  a scan of the various repositories is only initiated if 's' is chosen. If 's' is chosen as the first option a default user account is scanned for words of interest
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--stealth", help="Dispense with logging messages where nothing is found",
+                    action="store_true")
+    args = parser.parse_args()
+
     selected = displayMenu()
     while(selected != 's'):
         if selected == 'o':                  
@@ -297,7 +313,7 @@ if __name__ == "__main__":
         elif selected == 'u':
             users = readUserNames()         # Read in users 
         elif selected == 'i':
-            rangeIDs = readIDRange()           # Just returns range
+            rangeIDs = readIDRange()        # Just returns range
             users = identifyUsersInRange(rangeIDs) # Get all user names in the range supplied 
         elif selected == 'q':
             exit()

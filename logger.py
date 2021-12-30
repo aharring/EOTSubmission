@@ -11,9 +11,8 @@ import logging # Term #1, Lecture 3, week 9
 # The output will be split in to two files, one is purely informational & contains everything. The other contains details of suspicious entries only
 # Ideally the informational messages will be streamed to stdout as well so that it is possible to see progress
 
-debugLogFile = "idpghvul.log" # Just a straightforward log file, no timestamp, overwritten for each run
+debugLogFile = "idpghvul.log" # Just a straightforward log file
 infoLogFile = "idpghvul.info" # This file will contain details of all repositories/files listed in commits as changed, as well as verification of keywords scanned
-pVulLogFile = "idpghvul.pvul"
 
 def configLogFile(name, log_file, level):
 
