@@ -3,7 +3,7 @@ GMIT CyberSecurity
 ===========
 Python, Programming for CyberSecurity
 ============
-End of term project submission : GitHubScanner
+**End of term project submission :** GitHubScanner
   
 
 --------
@@ -63,21 +63,20 @@ Note :  if no information is supplied use default !!!
 
 **17/12/2021**
 
-       Modified idpghvul.py so that information scrolling to screen specifically mentioned log file name. 
-       Previously it just said "This file"
+Modified idpghvul.py so that information scrolling to screen specifically mentioned log file name. 
+Previously it just said "This file"
 
 **20/12/2021**
 
-       Not happy with the way the logging works at present. 
-       Going to introduce command line arguments
-           -h just a usage message explaining the program can be run in verbose mode or stealth mode - stealth will print errors only
-           -s stealth mode will only log errors found
-            verbose is useful for seeing what is happening and provides reassurance the program is running.
-           - it will print messages for all files scanned not just the ones with errors 
-            The programs default execution is verbose. If no parameter is passed the program will execute in verbose mode
-            which is definitely provides reassurance the program is doing something
+Not happy with the way the logging works at present. 
+Going to introduce command line arguments
+       -h just a usage message explaining the program can be run in verbose mode or stealth mode - stealth will print errors only
+       -s stealth mode will only log errors found
+        verbose is useful for seeing what is happening and provides reassurance the program is running.
+       - it will print messages for all files scanned not just the ones with errors 
+The programs default execution is verbose. If no parameter is passed the program will execute in verbose mode which is definitely provides reassurance the program is doing something
 
 **30/12/2021**
 
-       Read up on how to format a github .md file at [GitHub Docs] (https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)           
-       Changed the logging to log to one output file. Stealth mode negates the need for two logs imo.
+Read up on how to format a github .md file at [GitHub Docs] (https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)           
+Changed the logging to log to one output file. Stealth mode negates the need for two logs imo.
