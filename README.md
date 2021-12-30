@@ -45,23 +45,23 @@ End of term project submission
 
 **References :**
 
-        - [Pygithub Introduction](https://pygithub.readthedocs.io/en/latest/introduction.html)
-        - [Generating temp files using Python](https://www.tutorialspoint.com/generate-temporary-files-and-directories-using-python)
-        - [Python shutil for directory manipulation](https://docs.python.org/3/library/shutil.html)
-        - [Python Regular Expressions](https://www.programiz.com/python-programming/regex )
-        - [StackOverflow - Resolving GitHub errors](https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit)
-        - [StackOverflow - Colour terminal text](https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal)
-        - [Python Logging](https://docs.python.org/3/library/logging.html )
-        - [Python - Multiple file logging](https://stackoverflow.com/questions/11232230/logging-to-two-files-with-different-settings)
-        - https://www.w3schools.com/python/ref_func_set.asp
-        - [Fun Terminal Fonts](https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b)
-        - [Python Command Line Arguments](https://www.tutorialspoint.com/python/python_command_line_arguments.htm)
+- [Pygithub Introduction](https://pygithub.readthedocs.io/en/latest/introduction.html)
+- [Generating temp files using Python](https://www.tutorialspoint.com/generate-temporary-files-and-directories-using-python)
+- [Python shutil for directory manipulation](https://docs.python.org/3/library/shutil.html)
+- [Python Regular Expressions](https://www.programiz.com/python-programming/regex )
+- [StackOverflow - Resolving GitHub errors](https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit)
+- [StackOverflow - Colour terminal text](https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal)
+- [Python Logging](https://docs.python.org/3/library/logging.html )
+- [Python - Multiple file logging](https://stackoverflow.com/questions/11232230/logging-to-two-files-with-different-settings)
+- https://www.w3schools.com/python/ref_func_set.asp
+- [Fun Terminal Fonts](https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b)
+- [Python Command Line Arguments](https://www.tutorialspoint.com/python/python_command_line_arguments.htm)
 
 **Tracking additions/Changes asof Dec 17 2021 for git push comments**
 
 **17/12/2021**
 
-       Modified idpghvul.py so that information scrolling to screen specifically mentioned info & vulnerabilitiy log file names. 
+       Modified idpghvul.py so that information scrolling to screen specifically mentioned log file name. 
        Previously it just said "This file"
 
 **20/12/2021**
