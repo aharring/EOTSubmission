@@ -1,14 +1,15 @@
+GMIT CyberSecurity 
 
-#GMIT CyberSecurity 
-Programming for CyberSecurity, Python
+Python, Programming for CyberSecurity
 ============
-##End of term project submission
+End of term project submission
   
 
 --------
-**Lecturer :**Andrew Beatty
 
-**Student  :**Adele Harrington 
+**Lecturer :** Andrew Beatty
+
+**Student  :** Adele Harrington 
 
 **Program Name :** idpghvul.py (Identify potential git hub vulnerabilities)
 
@@ -44,17 +45,17 @@ Programming for CyberSecurity, Python
 
 **References :**
 
-       1. [Pygithub Introduction](https://pygithub.readthedocs.io/en/latest/introduction.html)
-       2. [Generating temp files using Python](https://www.tutorialspoint.com/generate-temporary-files-and-directories-using-python)
-       3. [Python shutil for directory manipulation](https://docs.python.org/3/library/shutil.html)
-       4. [Python Regular Expressions](https://www.programiz.com/python-programming/regex )
-       5. [StackOverflow - Resolving GitHub errors](https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit)
-       6. [StackOverflow - Colour terminal text](https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal)
-       7. [Python Logging](https://docs.python.org/3/library/logging.html )
-       8. [Python - Multiple file logging](https://stackoverflow.com/questions/11232230/logging-to-two-files-with-different-settings)
-       9. https://www.w3schools.com/python/ref_func_set.asp
-      10. [Fun Terminal Fonts](https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b)
-      11. [Python Command Line Arguments](https://www.tutorialspoint.com/python/python_command_line_arguments.htm)
+        - [Pygithub Introduction](https://pygithub.readthedocs.io/en/latest/introduction.html)
+        - [Generating temp files using Python](https://www.tutorialspoint.com/generate-temporary-files-and-directories-using-python)
+        - [Python shutil for directory manipulation](https://docs.python.org/3/library/shutil.html)
+        - [Python Regular Expressions](https://www.programiz.com/python-programming/regex )
+        - [StackOverflow - Resolving GitHub errors](https://stackoverflow.com/questions/9617336/how-to-resolve-git-did-not-exit-cleanly-exit-code-128-error-on-tortoisegit)
+        - [StackOverflow - Colour terminal text](https://stackoverflow.com/questions/287871/how-to-print-colored-text-to-the-terminal)
+        - [Python Logging](https://docs.python.org/3/library/logging.html )
+        - [Python - Multiple file logging](https://stackoverflow.com/questions/11232230/logging-to-two-files-with-different-settings)
+        - https://www.w3schools.com/python/ref_func_set.asp
+        - [Fun Terminal Fonts](https://towardsdatascience.com/prettify-your-terminal-text-with-termcolor-and-pyfiglet-880de83fda6b)
+        - [Python Command Line Arguments](https://www.tutorialspoint.com/python/python_command_line_arguments.htm)
 
 **Tracking additions/Changes asof Dec 17 2021 for git push comments**
 
