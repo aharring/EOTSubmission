@@ -1,28 +1,36 @@
-GMIT CyberSecurity : Programming for CyberSecurity, Python
+GMIT CyberSecurity 
+===========
+Programming for CyberSecurity, Python
 ============
                      End of term project submission
-------------
+============
+
 **Lecturer :**Andrew Beatty
+
 **Student  :**Adele Harrington 
+
 **Program Name :** idpghvul.py (Identify potential git hub vulnerabilities)
+
 **Current Status :** Work in progress 
+
 **Program Function :** 
+
        This program will
 
-       * display a menu with the following options
-           * Enter one or more org names
-           * Enter one or more users
-           * Enter an id range to be scanned
-               if no id range is supplied use default & proceed
-               For range option do simple checks such as min < max, min & max are both positive 
-           * Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
-           * Get the associated repos, check the commits for vulerabilities (WIP)
+       - display a menu with the following options
+           - Enter one or more org names
+           - Enter one or more users
+           - Enter an id range to be scanned
+              if no id range is supplied use default & proceed
+              For range option do simple checks such as min < max, min & max are both positive 
+           - Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
+           - Get the associated repos, check the commits for vulerabilities (WIP)
              Note :  if no information is supplied use default !!! 
-               * For each listed user
-                   * download user respository to a temp directory
-                   * check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
-                   * record vulnerabilties
-                   * remove tmp downloaded dir in preparation for next iteration
+               - For each listed user
+                   - download user respository to a temp directory
+                   - check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
+                   - record vulnerabilties
+                   - remove tmp downloaded dir in preparation for next iteration
 
 **Fun Add On :**
              Every terminal run program needs an ascii text name that makes it look like an 80s arcade game title
