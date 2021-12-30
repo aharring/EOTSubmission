@@ -16,17 +16,23 @@ Python, Programming for CyberSecurity
 
 **Current Status :** Work in progress 
 
+**Usage :** python3  idpghvul.py [-h] [-s]
+
+optional arguments:
+
+  -h, --help     show this help message and exit
+
+  -s, --stealth  Dispense with logging messages where nothing is found
+
 **Program Function :** 
 
-This program will
+This program will display a menu with the following options
 
-- display a menu with the following options
 - Enter one or more org names
 - Enter one or more users
 - Enter an id range to be scanned
-   - if no id range is supplied use default & proceed
    - For range option do simple checks such as min < max, min & max are both positive 
-- If Scan is chosen
+- Scan 
     - Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
     - Get the associated repos, check the commits for vulerabilities 
 Note :  if no information is supplied use default !!! 
@@ -35,6 +41,8 @@ Note :  if no information is supplied use default !!!
                - check to see if the files downloaded have any obvious vulnerabilties such as passwords or keys
                - record vulnerabilties
                - remove tmp downloaded dir in preparation for next iteration
+- Quit
+    - Exit the program, do noting at all
 
 **Fun Add On :**
              Every terminal run program needs an ascii text name that makes it look like an 80s arcade game title
