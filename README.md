@@ -78,5 +78,5 @@ The programs default execution is verbose. If no parameter is passed the program
 
 **30/12/2021**
 
-Read up on how to format a github .md file at [GitHub Docs] (https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)           
+Read up on how to format a github .md file at [GitHub Docs](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)           
 Changed the logging to log to one output file. Stealth mode negates the need for two logs imo.
