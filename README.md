@@ -91,3 +91,9 @@ The programs default execution is verbose. If no parameter is passed the program
 
 Read up on how to format a github .md file at [GitHub Docs](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)           
 Changed the logging to log to one output file. Stealth mode negates the need for two logs imo.
+
+**31/12/2021**
+
+Some additional tidy up & testing on idpghvul.py but decided to start looking at port scanners because i'd never gotten round to it
+and it's a nice distraction when code is starting to look all the same so .. created a new directory called Options
+In Options I've placed a very basic port scanner which was good enough to scan one of our machines and tell there were ports open running ssh and http but ... not good enough to scan through microsft or hse - I'm thinking there must be something holding the connection stopping the scan. It remains to be seen if I can figure it out

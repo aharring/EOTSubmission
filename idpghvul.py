@@ -61,6 +61,7 @@ import argparse # The program can be run in verbose mode with extensive logging 
 import pyfiglet # Ascii program banner
 import requests # Http library 
 import tempfile # This module allwos the creation of temporary files & directories
+import subprocess # This is just to allow a clear screen for program execution
 
 from git import Repo
 from git import NULL_TREE
@@ -304,6 +305,8 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--stealth", help="Dispense with logging messages where nothing is found",
                     action="store_true")
     args = parser.parse_args()
+
+    subprocess.call('clear', shell=True)    # Found this when looking at port scanners. Thought it was nice
 
     selected = displayMenu()
     while(selected != 's'):
