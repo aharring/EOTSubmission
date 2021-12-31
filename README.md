@@ -3,12 +3,12 @@ GMIT CyberSecurity
 ===========
 Python, Programming for CyberSecurity
 ============
-**End of term project submission :** GitHubScanner
-  
 
 <img src="https://image.ibb.co/gw4Gen/Index_GMIT.png" alt="Index GMIT" border="0" /> 
 
 --------
+
+**End of term project submission :** GitHubScanner
 
 **Lecturer :** Andrew Beatty
 
@@ -58,6 +58,7 @@ Note :  if no information is supplied use default !!!
 **References :**
 
 - [Pygithub Introduction](https://pygithub.readthedocs.io/en/latest/introduction.html)
+- [StackOverflow -Github user by userID](https://stackoverflow.com/questions/35972249/get-github-username-by-github-user-id)
 - [Generating temp files using Python](https://www.tutorialspoint.com/generate-temporary-files-and-directories-using-python)
 - [Python shutil for directory manipulation](https://docs.python.org/3/library/shutil.html)
 - [Python Regular Expressions](https://www.programiz.com/python-programming/regex )

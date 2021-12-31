@@ -49,6 +49,8 @@
 #      12. https://docs.python.org/3/howto/argparse.html#id1 .. more about command line arguments
 #      13. https://docs.python.org/3/library/re.html
 #      14. https://docs.python.org/3/library/tempfile.html
+#      15. https://stackoverflow.com/questions/35972249/get-github-username-by-github-user-id
+#      16. https://gitpython.readthedocs.io/en/stable/tutorial.html#meet-the-repo-type
 #
 
 import re       # Regular expression matching operations
@@ -99,7 +101,6 @@ likelyCandidates = {
 
 # Set up the log file that contains all execution output 
 infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
-infoLog.info('{} file contains execution output' .format (logger.infoLogFile)) 
 
 # Initial menu presented when program executes
 # You can build your scan list by entering org names and/or users and/or id ranges
@@ -159,13 +160,13 @@ def readIDRange():
 def cloneRepo(repoUrl):
 # Make a tmp dir for repo getting health check
     tmpDir = tempfile.mkdtemp()
-    Repo.clone_from(repoUrl, tmpDir)
+    Repo.clone_from(repoUrl, tmpDir)          # https://gitpython.readthedocs.io/en/stable/tutorial.html
     return tmpDir   
 
 def requestRP(repoPath):
     repoPaths = requests.Response()
     try:
-        repoPaths = requests.get(url=repoPath)
+        repoPaths = requests.get(url=repoPath) # default query would execute a get on https://api.github.com/users/andrewbeattycourseware/repos
     except:
         pass
     return repoPaths.json()
@@ -179,7 +180,7 @@ def idOrgUsers(orgs):
     for org in orgs:                                      # One or more orgs supplied by user input
         try:
             path = "{}/orgs/{}/members".format(ghUrl, org)
-            resp = requests_page(path)
+            resp = requestRP(path)
         except:
             pass
     for user in resp:
@@ -200,7 +201,7 @@ def identifyUsersInRange (rangeIDs):
     for id in ids:
         try:
             path = "{}/user/{}".format(ghUrl, id)
-            resp = requests_page(path)
+            resp = requestRP(path)
             users.append(resp["login"])
         except:
             pass
@@ -252,7 +253,7 @@ def findPossibleProblems (commitDiff):
 
 def healthCheck(repoUrl):
 
-    tmpDir = cloneRepo(repoUrl)
+    tmpDir = cloneRepo(repoUrl)           # Make a local copy of the gh url. 
     repo = Repo(tmpDir)
     branches = repo.remotes.origin.fetch()
 
@@ -325,4 +326,5 @@ if __name__ == "__main__":
  
     banner = pyfiglet.figlet_format("GHUB SCANNER")
     infoLog.info(banner)
+    infoLog.info('{} file contains execution output' .format (logger.infoLogFile)) 
     retrieveRepos() 
