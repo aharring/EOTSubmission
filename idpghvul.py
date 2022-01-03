@@ -10,7 +10,7 @@
 #               if no id range is supplied use default & proceed
 #               For range option do simple checks such as min < max, min & max are both positive. Review error checking* 
 #           . Collate orgs, users in orgs, users and users identified with range ids - remove duplicates
-#           . Get the associated repos, check the commits for vulerabilities (WIP)
+#           . Get the associated repos, check the commits for vulerabilities 
 #             Note :  if no information is supplied use default !!! 
 #               . For each listed user
 #                   . download user respository to a temp directory
@@ -19,10 +19,6 @@
 #                   . remove tmp downloaded dir in preparation for next iteration
 #         Fun Add On :
 #             Every terminal run program needs an ascii text name that makes it look like an 80s arcade game title
-#
-# To Do :
-#       Error handling needs to be better
-#       Might make words being tested for a passable file on the command line - probaly there are way more words and things I can think of.
 #
 # Issues Encountered :
 #       This program has the potential to generate a lot of output so I really wanted something that would log informational messages versus actual potential problems
@@ -54,7 +50,7 @@
 #
 
 import re       # Regular expression matching operations
-import json
+import json     # To view github data in a formatted manner
 import shutil   # Allows directory operations such as rmdir
 import logger   # Logging functionality separated out in to it's own module
 import argparse # The program can be run in verbose mode with extensive logging or non verbose which doesn't log when it finds nothing
@@ -63,12 +59,12 @@ import requests # Http library
 import tempfile # This module allwos the creation of temporary files & directories
 import subprocess # This is just to allow a clear screen for program execution
 
-from git import Repo
+from git import Repo        # https://gitpython.readthedocs.io/en/stable/tutorial.html
 from git import NULL_TREE
 
-# Variable definitions & defaults
+# Variable definitions, initialisations & defaults
 
-ghUrl = "https://api.github.com"
+ghUrl = "https://api.github.com"         # The first part of the url when doing a request to 'get' github json data
 
 orgs = []
 users = []
@@ -105,8 +101,9 @@ infoLog = logger.configLogFile('Execution Output', logger.infoLogFile, "INFO")
 
 # Initial menu presented when program executes
 # You can build your scan list by entering org names and/or users and/or id ranges
-# The Scan is initiated only once when the user enters s.
+# The Scan is initiated only once when the user enters 's'.
 # If no orgs/users/id ranges have been supplied then the default scan is for the lecturer, Andrew Beatty's, account
+# This portion of the project is revision of work done earlier in Term 1
 
 def displayMenu():
 
@@ -135,7 +132,7 @@ def readOrgNames():
     return orgs 
 
 # displayMenu gives the option of entering user names for review.
-# This function reads in the user names & stores them for processing
+# This function reads in the user login & stores them for processing
  
 def readUserNames():
 
@@ -158,11 +155,21 @@ def readIDRange():
     rangeIDs["upper"]=int(input("\t\tEnter to id (int):"))
     return rangeIDs 
 
+# Github provides the ability to clone a repository locally 
+# This function does precisely that
+
 def cloneRepo(repoUrl):
-# Make a tmp dir for repo getting health check
-    tmpDir = tempfile.mkdtemp()
+    # Make a tmp dir for repo getting health check
+    tmpDir = tempfile.mkdtemp()               # https://docs.python.org/3/library/tempfile.html
     Repo.clone_from(repoUrl, tmpDir)          # https://gitpython.readthedocs.io/en/stable/tutorial.html
     return tmpDir   
+
+# This function takes a github repo path and issues a get on it to extract json data
+# The output can be very long but if you want to see what it looks like you can execute the following on the command line
+#
+#     curl -l https://api.github.com/users/andrewbeattycourseware/repos
+#
+
 
 def requestRP(repoPath):
     repoPaths = requests.Response()
@@ -174,6 +181,12 @@ def requestRP(repoPath):
 
 #
 # If an organisation is supplied instead or a user or id then we need to find all the users associated with the organisation
+# Depending on the organisation there can be a lot of associated users. We're interested in the 'login' portion of the json response 
+# If you want to see what the response looks like you can execute the following on the command line
+#
+#     curl -l https://api.github.com/orgs/ORGNAME/members 
+#
+# I used facebook as an example ORGNAME
 #
 def idOrgUsers(orgs):
 
@@ -182,17 +195,24 @@ def idOrgUsers(orgs):
         try:
             path = "{}/orgs/{}/members".format(ghUrl, org)
             resp = requestRP(path)
-        except:
-            pass
-    for user in resp:
-        try:
-            users.append(user["login"])
+
+            for user in resp:                             # Bugfix 03/01/2022 - previously was only looping through users in last org processed
+                try:
+                    users.append(user["login"])
+                except:
+                    pass
         except:
             pass
 
 #
 # If given a range of ids try to find the associated github user names
 # This function expects operates on the assumption the range is positive and min < max
+# It loops through the range an executes a request based on the users 'id'
+# The information returned will include the login/user for the associated id
+#
+# If you want to see what the response looks like you can execute the following on the command line
+#     curl -l https://api.github.com/user/ID
+# For example, curl -l https://api.github.com/user/4121 will return user information for login dreiss (random example) 
 #
 def identifyUsersInRange (rangeIDs):
 
@@ -206,13 +226,13 @@ def identifyUsersInRange (rangeIDs):
             users.append(resp["login"])
         except:
             pass
-    return users # Again, I haven't reset users so the users list should be a culmination of all users/users in range/orgusers from menu hopping
 
 def retrieveRepos ():
 # Retrieving repos based on username. 
    
-    # We might have to retrieve a combination of users from individual users, orgs and those supplied by range soooooo we need to make sure they are all included
-    allUsers = orgs + users                                       # Haven't written range code yet 
+    # Bugfix 03/01/2022 the org function already adds all users for an org to the users list
+
+    allUsers = users                                       
     allUsers = set(allUsers)                                      # It seems possible to have duplicates so using python set should remove them
 
     if not allUsers :                                             # In the event no org/user/range was supplied
@@ -312,13 +332,12 @@ if __name__ == "__main__":
     while(selected != 's'):
         if selected == 'o':                  
             orgs = readOrgNames()           # Read in then organisation names
-            print (orgs)
-            idOrgUsers(orgs)                # For each org in orgs - identify the users
+            idOrgUsers(orgs)                # For each org in orgs - identify the users. Function adds to users[]
         elif selected == 'u':
-            users = readUserNames()         # Read in users 
+            users = readUserNames()         # Read in users & add to users[]
         elif selected == 'i':
             rangeIDs = readIDRange()        # Just returns range
-            users = identifyUsersInRange(rangeIDs) # Get all user names in the range supplied 
+            identifyUsersInRange(rangeIDs)  # Get all user names in the range supplied 
         elif selected == 'q':
             exit()
         elif selected !='s':
@@ -330,4 +349,6 @@ if __name__ == "__main__":
     banner = pyfiglet.figlet_format("GHUB SCANNER")
     infoLog.info(banner)
     infoLog.info('{} file contains execution output' .format (logger.infoLogFile)) 
+    if not args.stealth:
+        infoLog.info('List of github User logins being scanned {}' .format (users)) 
     retrieveRepos() 

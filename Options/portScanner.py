@@ -56,8 +56,8 @@ except socket.gaierror:
     print ("Hostname could not be resolved. Exiting")
     sys.exit()
 
-except socket.timeout as timeout:
-    print(timeout)
+except socket.timeout:
+    print("Timeout")
     sys.exit()
 
 except socket.error:
